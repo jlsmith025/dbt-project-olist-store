@@ -15,8 +15,8 @@ create table if not exists raw.olist.customers (
 create table if not exists raw.olist.geolocation (
 
 	geolocation_zip_code_prefix varchar(5),
-	geolocation_lat geography,
-	geolocation_lng geography,
+	geolocation_lat number(15,12),
+    geolocation_lng number(15,12),
 	geolocation_city varchar(16777216),
 	geolocation_state varchar(16777216)
 
