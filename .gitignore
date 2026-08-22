@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Olist CSV Files
+Ingestion/olist dataset
+
+# dbt log folders
+target/
+dbt_packages/
+logs/
+.env
