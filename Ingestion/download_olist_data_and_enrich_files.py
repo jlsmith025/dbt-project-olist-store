@@ -1,13 +1,10 @@
 import kagglehub
-import duckdb
 from pathlib import Path
 import pandas as pd
 from faker import Faker
 
-"""
-Functions
-"""
-def download_olist_csvs_from_kaggle(olist_csv_target_path):
+
+def download_olist_csvs_from_kaggle(olist_csv_target_path) -> None:
     """ 
         Download the latest version of the Olist Brazilian E-Commerce dataset from Kaggle. 
         force_download = True overwrites the data each run.
@@ -20,6 +17,7 @@ def download_olist_csvs_from_kaggle(olist_csv_target_path):
     )
 
     print(f'\n' + '=' * 70 + f"\nOlist Data Downloaded to {olist_csv_target_path}\n" + '=' * 70 + '\n')
+
 
 def generate_seller_name(seller_id: str, locale: str = "pt_BR") -> str:
     """
@@ -45,10 +43,8 @@ def add_fake_seller_names_to_seller_data(input_file: Path) -> None:
     df.to_csv(input_file, index=False)
     print(f'\n' + '=' * 100 + f"\nAdded Faker generated seller company names to {input_file}\n" + '=' * 100 + '\n')
 
-"""
-Main Block
-"""
-if __name__ == '__main__':
+
+def main() -> None:
     # Define variables
     olist_csv_target_path = r'Ingestion\olist dataset'
     sellers_csv_file = Path(r'Ingestion\olist dataset\olist_sellers_dataset.csv')
@@ -58,3 +54,7 @@ if __name__ == '__main__':
 
     # Enrich the sellers data file with a faker generated seller name
     add_fake_seller_names_to_seller_data(sellers_csv_file)
+
+
+if __name__ == '__main__':
+    main()
