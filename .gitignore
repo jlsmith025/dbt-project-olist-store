@@ -225,3 +225,6 @@ target/
 dbt_packages/
 logs/
 .env
+
+# Personal credentials and notes
+_Personal
