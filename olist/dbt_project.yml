@@ -1,25 +1,33 @@
-name: olist
+name: 'olist'
+version: '1.0.0'
+config-version: 2
 
-profile: olist
+profile: 'olist'
 
-#seed-paths: ["seeds"]
-#model-paths: ["models"]
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
 macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
 clean-targets:
   - "target"
   - "dbt_packages"
 
-# seeds:
-#   # Builds seeds into '<your_schema_name>_raw'
-#   olist:
-#     +schema: raw
-
 models:
   olist:
-    +static_analysis: strict
-    # Materialize staging models as views, and marts as tables
     staging:
-      +schema: staging
+      +schema: STAGING
       +materialized: view
-    # marts:
-    #   +materialized: table
+    intermediate:
+      +schema: STAGING
+      +materialized: view
+    marts:
+      +schema: OLIST_MART
+      +materialized: table
+
+seeds:
+  olist:
+    +database: RAW
+    +schema: OLIST

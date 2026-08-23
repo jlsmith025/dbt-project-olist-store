@@ -1,0 +1,95 @@
+version: 2
+
+sources:
+  - name: olist
+    database: raw
+    schema: olist
+    description: E-commerce data from Olist
+    tables:
+      - name: customers
+        description: One record per customer and order. Multiple records per customer for multiple orders.
+        columns:
+          - name: customer_id
+            description: Unique ID for an order
+            data_tests:
+              - unique
+              - not_null
+
+          - name: customer_unique_id
+            description: Key to the orders table. Each order has a unique customer_id.
+            data_tests:
+              - not_null
+              
+      - name: geolocation
+        description: This table has Brazilian zip codes and its lat/lng coordinates. geolocation_zip_code_prefix can have multiple records.
+      
+      - name: orders
+        description: This table contains 1 record per order
+        columns:
+          - name: order_id
+            description: Unique identifier for an order
+            data_tests:
+              - unique
+              - not_null
+          
+          - name: customer_id
+            description: Key to the customers table. each order has a unique customer_id
+            data_tests:
+              - unique
+              - not_null
+      
+      - name: order_items
+        description: This table contains 1 record per item in an order. Includes data about the items purchased within each order.
+        columns:
+          - name: order_id
+            description: Unique identifier for an order
+            data_tests:
+              - not_null
+
+          - name: order_item_id
+            description: sequential number identifying number of items included in the same order.
+            data_tests:
+              - not_null
+          
+          - name: product_id
+            description: product unique identifier
+            data_tests:
+              - not_null
+
+      - name: order_payments
+        description: This table contains 1 record per order and payment sequence (different payment methods). Includes data about the orders payment options.
+
+      - name: order_reviews
+        description: This table contains 1 record per review and order. An order can have multiple reviews.
+        columns:
+          - name: review_id
+            data_tests:
+              - not_null
+          
+          - name: order_id
+            data_tests:
+              - not_null
+
+      - name: products
+        description: This table contains 1 record per product offered
+        columns:
+          - name: product_id
+            data_tests:
+              - unique
+              - not_null
+      
+      - name: product_category_name_translation
+        description: This table contains 1 record per product category
+        columns:
+          - name: product_category_name
+            data_tests:
+              - unique
+              - not_null
+
+      - name: sellers
+        description: This table contains 1 record per seller of an item
+        columns:
+          - name: seller_id
+            data_tests:
+              - unique
+              - not_null
