@@ -7,7 +7,7 @@ with customers as (
 renamed as (
 
     select 
-        customer_id as order_id,
+        customer_id as order_customer_id,
         customer_unique_id customer_id,
         customer_zip_code_prefix as customer_zip_code,
         customer_city,

@@ -8,7 +8,7 @@ renamed as (
 
     select
         order_id,
-        customer_id,
+        customer_id as order_customer_id,
         order_status,
         order_purchase_timestamp,
         order_approved_at as order_approved_timestamp,
