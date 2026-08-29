@@ -1,0 +1,211 @@
+version: 2
+
+models:
+  - name: fact_order_lifecycle
+    description: >
+      Fact table at the order grain, capturing the order lifecycle 
+      from purchase through delivery. Holds lifecycle date/time
+      keys, duration measures between lifecycle milestones, delivery performance
+      against the estimated delivery date, and lifecycle stage flags.
+    columns:
+      - name: order_customer_key
+        description: Surrogate key (MD5 hash of order_customer_id).
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_order_customer')
+                field: order_customer_key
+
+      - name: customer_unique_key
+        description: Surrogate key (MD5 hash of customer_unique_id), used to join to dim_customer.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_unique_key
+
+      - name: customer_unique_id
+        description: Natural key identifying a customer across multiple orders.
+        tests:
+          - not_null
+
+      - name: order_customer_id
+        description: Natural key identifying the customer as recorded on the order.
+        tests:
+          - unique
+          - not_null
+
+      - name: order_id
+        description: Natural key identifying the order. Grain of this table.
+        tests:
+          - unique
+          - not_null
+
+      - name: order_status
+        description: Current status of the order (e.g. Delivered, Shipped, Canceled), title-cased.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Delivered
+                  - Shipped
+                  - Canceled
+                  - Invoiced
+                  - Processing
+                  - Unavailable
+                  - Approved
+                  - Created
+
+      - name: order_purchase_date_key
+        description: Date key (YYYYMMDD) when the order was purchased. Foreign key to dim_date.
+        tests:
+          - not_null
+          # - relationships:
+          #     to: ref('dim_date')
+          #     field: date_key
+
+      - name: order_purchase_at
+        description: Time-of-day component of the order purchase timestamp.
+
+      - name: order_approved_date_key
+        description: Date key (YYYYMMDD) when the order was approved. Foreign key to dim_date.
+        tests:
+          # - relationships:
+          #     to: ref('dim_date')
+          #     field: date_key
+
+      - name: order_approved_at
+        description: Time-of-day component of the order approval timestamp.
+
+      - name: order_carrier_handoff_date_key
+        description: Date key (YYYYMMDD) when the order was handed off to the carrier. Foreign key to dim_date.
+        tests:
+          # - relationships:
+          #     to: ref('dim_date')
+          #     field: date_key
+
+      - name: order_carrier_handoff_at
+        description: Time-of-day component of the carrier handoff timestamp.
+
+      - name: order_delivered_date_key
+        description: Date key (YYYYMMDD) when the order was delivered to the customer. Foreign key to dim_date.
+        tests:
+          # - relationships:
+          #     to: ref('dim_date')
+          #     field: date_key
+
+      - name: order_delivered_at
+        description: Time-of-day component of the customer delivery timestamp.
+
+      - name: order_estimated_delivery_date_key
+        description: Date key (YYYYMMDD) of the estimated delivery date. Foreign key to dim_date.
+        tests:
+          # - relationships:
+          #     to: ref('dim_date')
+          #     field: date_key
+
+      - name: approval_duration_minutes
+        description: Minutes elapsed between order purchase and order approval.
+
+      - name: purchase_to_carrier_handoff_duration_hours
+        description: Hours elapsed between order purchase and carrier handoff.
+
+      - name: purchase_to_delivery_duration_days
+        description: Days elapsed between order purchase and delivery to the customer.
+
+      - name: carrier_handoff_to_delivery_duration_days
+        description: Days elapsed between carrier handoff and delivery to the customer.
+
+      - name: delivery_variance_to_estimate_days
+        description: >
+          Difference in days between actual delivery date and the estimated
+          delivery date. Negative values indicate early delivery, positive
+          values indicate late delivery.
+
+      - name: days_delivered_early
+        description: Number of days delivered early. Null when the order was not delivered early.
+
+      - name: days_delivered_late
+        description: Number of days delivered late. Null when the order was not delivered late.
+
+      - name: delivery_performance_status
+        description: >
+          Categorical delivery outcome relative to the estimated delivery date:
+          Not Delivered, Estimate Unavailable, Delivered - Early,
+          Delivered - On Time, or Delivered - Late.
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - Not Delivered
+                  - Estimate Unavailable
+                  - Delivered - Early
+                  - Delivered - On Time
+                  - Delivered - Late
+
+      - name: was_delivered_early
+        description: Flag (1/0) indicating the order was delivered before the estimated delivery date. Null when not yet delivered.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                config:
+                  where: "was_delivered_early is not null"
+
+      - name: was_delivered_on_time
+        description: Flag (1/0) indicating the order was delivered on the estimated delivery date. Null when not yet delivered.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                config:
+                  where: "was_delivered_on_time is not null"
+
+      - name: was_delivered_late
+        description: Flag (1/0) indicating the order was delivered after the estimated delivery date. Null when not yet delivered.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                config:
+                  where: "was_delivered_late is not null"
+
+      - name: was_approved
+        description: Flag (1/0) indicating whether the order has reached the approved milestone.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: was_handed_to_carrier
+        description: Flag (1/0) indicating whether the order has reached the carrier handoff milestone.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: was_delivered
+        description: Flag (1/0) indicating whether the order has reached the delivered-to-customer milestone.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments: 
+                values: [0, 1]
+
+      - name: was_canceled
+        description: Flag (1/0) indicating whether the order was canceled.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: dw_loaded_at
+        description: Timestamp when this row was loaded into the data warehouse.
+        tests:
+          - not_null
