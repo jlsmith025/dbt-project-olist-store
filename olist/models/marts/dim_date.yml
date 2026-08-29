@@ -1,0 +1,153 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: >
+      Hand-rolled date dimension spanning 2016-01-01 to 2019-01-01 (covers the
+      Olist order date range with buffer). Grain is one row per calendar day,
+      built from a dbt_utils.date_spine. Includes standard calendar attributes
+      (day/week/month/quarter/year, ISO day of week) plus Brazilian national
+      holiday flags joined from the br_holidays seed.
+    columns:
+      - name: date_key
+        description: The calendar date key. Primary key of this dimension.
+        data_tests:
+          - unique
+          - not_null
+      
+      - name: date_day
+        description: The calendar date.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: day_of_month
+        description: Day of month number (1-31).
+        data_tests:
+          - not_null
+
+      - name: day_of_year
+        description: Day of year number (1-366).
+        data_tests:
+          - not_null
+
+      - name: day_of_week
+        description: Day of week number, Snowflake native numbering (0 = Sunday, 6 = Saturday).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1, 2, 3, 4, 5, 6]
+
+      - name: day_name
+        description: Full name of the day of week (e.g. Monday).
+        data_tests:
+          - not_null
+
+      - name: day_of_week_iso
+        description: ISO day of week number (Monday = 1, Sunday = 7).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments: 
+                values: [1, 2, 3, 4, 5, 6, 7]
+
+      - name: is_weekend
+        description: True if the date falls on Saturday or Sunday.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: week_of_year
+        description: Week number within the calendar year.
+        data_tests:
+          - not_null
+
+      - name: week_start_date
+        description: Date of the first day of the week containing date_day.
+        data_tests:
+          - not_null
+
+      - name: week_end_date
+        description: Date of the last day of the week containing date_day.
+        data_tests:
+          - not_null
+
+      - name: month_of_year
+        description: Calendar month number (1-12).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+      - name: month_name
+        description: Full name of the month (e.g. January).
+        data_tests:
+          - not_null
+
+      - name: month_start_date
+        description: First calendar date of the month containing date_day.
+        data_tests:
+          - not_null
+
+      - name: month_end_date
+        description: Last calendar date of the month containing date_day.
+        data_tests:
+          - not_null
+
+      - name: quarter_of_year
+        description: Calendar quarter number (1-4).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4]
+
+      - name: quarter_start_date
+        description: First calendar date of the quarter containing date_day.
+        data_tests:
+          - not_null
+
+      - name: quarter_end_date
+        description: Last calendar date of the quarter containing date_day.
+        data_tests:
+          - not_null
+
+      - name: year_number
+        description: Calendar year.
+        data_tests:
+          - not_null
+
+      - name: year_start_date
+        description: First calendar date of the year containing date_day (Jan 1).
+        data_tests:
+          - not_null
+
+      - name: year_end_date
+        description: Last calendar date of the year containing date_day (Dec 31).
+        data_tests:
+          - not_null
+
+      - name: prior_year_date_day
+        description: Same calendar date one year prior, for year-over-year comparisons.
+        data_tests:
+          - not_null
+
+      - name: holiday_name
+        description: >
+          Name of the Brazilian national holiday on this date, if any.
+          Null on non-holiday dates.
+
+      - name: is_holiday
+        description: >
+          True if date_day matches a date in the brazil_holidays seed
+          (Brazilian national holidays, including moveable feasts like
+          Carnaval and Corpus Christi).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]

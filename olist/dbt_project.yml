@@ -10,6 +10,9 @@ test-paths: ["tests"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
 
+vars:
+  "dbt_date:time_zone": "America/Chicago"
+
 target-path: "target"
 clean-targets:
   - "target"
@@ -31,3 +34,6 @@ seeds:
   olist:
     +database: RAW
     +schema: OLIST
+    brazil_holidays:
+      +column_types:
+        holiday_date: date
