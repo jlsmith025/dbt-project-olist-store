@@ -1,0 +1,95 @@
+version: 2
+
+models:
+  - name: dim_order_customer
+    description: >
+      Order-grain dimension combining order and customer attributes.
+      One row per order. Customer-grain measures (e.g. lifetime value,
+      total purchase count) live in dim_customer instead.
+    columns:
+      - name: order_customer_key
+        data_type: varchar
+        description: "Surrogate key, md5 hash of order_customer_id. Primary key of this table"
+
+      - name: order_key
+        data_type: varchar
+        description: "Surrogate key, md5 hash of order_id."
+        tests:
+          - unique
+          - not_null
+
+      - name: order_id
+        description: Natural key of the order, sourced from stg__orders.
+        tests:
+          - unique
+          - not_null
+ 
+      - name: order_customer_id
+        description: >
+          Per-order customer identifier from the source system (unique per
+          order, not per customer). Used only to join customers to orders.
+        tests:
+          - not_null
+ 
+      - name: customer_unique_id
+        description: >
+          Durable identifier for a customer, consistent across all of that
+          customer's orders.
+        tests:
+          - not_null
+
+      - name: customer_city
+        description: Customer's city, proper-cased with Portuguese connector words kept lowercase.
+ 
+      - name: customer_state
+        description: Customer's state (two-letter code).
+ 
+      - name: customer_zip_code
+        description: Customer's zip code (prefix), used to join to geolocation.
+ 
+      - name: customer_latitude
+        description: Latitude associated with the customer's zip code, from int__geolocation_flattened.
+ 
+      - name: customer_longitude
+        description: Longitude associated with the customer's zip code, from int__geolocation_flattened.
+ 
+      - name: current_order_status
+        description: Current status of the order at last dbt run (not historized).
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - delivered
+                  - shipped
+                  - canceled
+                  - unavailable
+                  - invoiced
+                  - processing
+                  - created
+                  - approved
+ 
+      - name: is_customers_first_order
+        description: True if this is the customer's earliest order by purchase timestamp.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+ 
+      - name: is_customers_latest_order
+        description: True if this is the customer's most recent order by purchase timestamp.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+ 
+      - name: customer_order_sequence_number
+        description: 1-indexed sequence number of this order among the customer's orders, ordered by purchase timestamp.
+        tests:
+          - not_null
+ 
+      - name: dw_loaded_at
+        description: Timestamp this row was loaded by the data warehouse.
+        tests:
+          - not_null
