@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: >
+      Customer-grain dimension table. One row per customer_unique_id, combining
+      the customer's current (most recent) location attributes with lifetime
+      order summary measures sourced from dim_order_customer, stg__orders, and
+      int__customer_summary.
+    columns:
+      - name: customer_unique_key
+        description: Surrogate key for the customer, generated as an MD5 hash of customer_unique_id.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: customer_unique_id
+        description: Natural key identifying a unique customer across all their orders.
+        data_tests:
+          - not_null
+
+      - name: current_customer_city
+        description: City associated with the customer's most recent order.
+
+      - name: current_customer_state
+        description: State associated with the customer's most recent order.
+
+      - name: current_customer_zip_code
+        description: Zip code associated with the customer's most recent order.
+
+      - name: current_customer_latitude
+        description: Latitude associated with the customer's most recent order.
+
+      - name: current_customer_longitude
+        description: Longitude associated with the customer's most recent order.
+
+      - name: first_order_date
+        description: Date of the customer's first order.
+
+      - name: last_order_date
+        description: Date of the customer's most recent order.
+
+      - name: total_completed_orders
+        description: Count of completed orders placed by the customer over their lifetime.
+
+      - name: lifetime_completed_order_revenue
+        description: Total revenue from the customer's completed orders over their lifetime.
+
+      - name: dw_loaded_at
+        description: Timestamp indicating when this row was loaded by the data warehouse.
