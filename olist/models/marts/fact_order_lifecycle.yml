@@ -63,9 +63,10 @@ models:
         description: Date key (YYYYMMDD) when the order was purchased. Foreign key to dim_date.
         tests:
           - not_null
-          # - relationships:
-          #     to: ref('dim_date')
-          #     field: date_key
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
 
       - name: order_purchase_at
         description: Time-of-day component of the order purchase timestamp.
@@ -73,9 +74,10 @@ models:
       - name: order_approved_date_key
         description: Date key (YYYYMMDD) when the order was approved. Foreign key to dim_date.
         tests:
-          # - relationships:
-          #     to: ref('dim_date')
-          #     field: date_key
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
 
       - name: order_approved_at
         description: Time-of-day component of the order approval timestamp.
@@ -83,9 +85,10 @@ models:
       - name: order_carrier_handoff_date_key
         description: Date key (YYYYMMDD) when the order was handed off to the carrier. Foreign key to dim_date.
         tests:
-          # - relationships:
-          #     to: ref('dim_date')
-          #     field: date_key
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
 
       - name: order_carrier_handoff_at
         description: Time-of-day component of the carrier handoff timestamp.
@@ -93,9 +96,10 @@ models:
       - name: order_delivered_date_key
         description: Date key (YYYYMMDD) when the order was delivered to the customer. Foreign key to dim_date.
         tests:
-          # - relationships:
-          #     to: ref('dim_date')
-          #     field: date_key
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
 
       - name: order_delivered_at
         description: Time-of-day component of the customer delivery timestamp.
@@ -103,9 +107,10 @@ models:
       - name: order_estimated_delivery_date_key
         description: Date key (YYYYMMDD) of the estimated delivery date. Foreign key to dim_date.
         tests:
-          # - relationships:
-          #     to: ref('dim_date')
-          #     field: date_key
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
 
       - name: approval_duration_minutes
         description: Minutes elapsed between order purchase and order approval.
