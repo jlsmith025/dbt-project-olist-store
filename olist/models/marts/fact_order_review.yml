@@ -1,0 +1,98 @@
+models:
+  - name: fact_order_review
+    description: >
+      Composite grain: one row per (review_id, order_id) pair, reflecting a genuine
+      many-to-many relationship between reviews and orders in the Olist source data.
+      review_weight (1 / orders sharing a review_id) allows SUM(review_score * review_weight) 
+      to avoid double-counting when aggregating by review_id.
+      Denormalized analysis fact — does not join to conformed date/customer dimensions by design; 
+      see fact_order_lifecycle and dim_order_customer for that grain.
+    columns:
+      - name: order_review_key
+        description: "Surrogate key: md5 hash of review_id + order_id."
+        tests:
+          - unique
+          - not_null
+
+      - name: review_created_date_key
+        description: "YYYYMMDD integer date key derived from review_creation_date."
+        tests:
+          - not_null
+
+      - name: review_answer_date_key
+        description: "YYYYMMDD integer date key derived from review_answer_timestamp."
+
+      - name: review_answer_at
+        description: "Time-of-day component of review_answer_timestamp."
+
+      - name: review_id
+        description: "Natural key from source. Not unique on its own — see model description."
+        tests:
+          - not_null
+
+      - name: order_id
+        description: "Natural key from source. Not unique on its own — see model description."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_order_customer')
+                field: order_id
+
+      - name: review_comment_title
+        description: "Title the reviewer entered for their comment"
+
+      - name: review_comment_message
+        description: "Free-text comment from the reviewer"
+
+      - name: has_comment
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
+
+      - name: delivery_variance_to_estimate_days
+        description: "Denormalized from fact_order_lifecycle. Actual vs. estimated delivery date. Negative = early, positive = late."
+
+      - name: purchase_to_delivery_duration_days
+        description: "Denormalized from fact_order_lifecycle."
+
+      - name: delivery_performance_status
+        description: "Denormalized from fact_order_lifecycle."
+
+      - name: customer_city
+        description: "Denormalized from dim_order_customer."
+
+      - name: customer_state
+        description: "Denormalized from dim_order_customer."
+
+      - name: customer_zip_code
+        description: "Denormalized from dim_order_customer."
+
+      - name: customer_latitude
+        description: "Denormalized from dim_order_customer."
+
+      - name: customer_longitude
+        description: "Denormalized from dim_order_customer."
+
+      - name: review_score
+        description: "Review score chosen the review. Is a whole number between 1 - 5. 5 being the best."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+
+      - name: review_weight
+        description: "1 / count of orders sharing this review_id. Use as a multiplier to avoid inflating averages when a review fans out across orders."
+        tests:
+          - not_null
+
+      - name: orders_per_review
+        description: "Count of distinct order_ids associated with this review_id — 1 in the common case, >1 where the many-to-many exists."
+        tests:
+          - not_null
+
+      - name: review_response_days
+        description: "Days between review_creation_date and review_answer_timestamp."
