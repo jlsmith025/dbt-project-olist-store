@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: fact_order_payment
+    description: >
+      Order payments fact table at the grain of order_id + payment_sequence.
+      Can have multiple record per order and payment.
+      Captures payment method, installment details, and split-payment flags
+      derived from the raw payments source, joined to order and customer context.
+
+    columns:
+      - name: order_payment_key
+        description: Primary key. Surrogate key hashed from order_id + payment_sequential.
+        tests:
+          - unique
+          - not_null
+
+      - name: order_customer_key
+        description: Foreign key to dim_order_customer.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_order_customer')
+                field: order_customer_key
+
+      - name: customer_unique_key
+        description: Foreign key to dim_customer.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_unique_key
+
+      - name: order_id
+        description: Natural key. Unique identifier of the order.
+        tests:
+          - not_null
+
+      - name: payment_sequence
+        description: Natural key. Sequence number of the payment within the order.
+        tests:
+          - not_null
+
+      - name: payment_type
+        description: Payment method used, title-cased (e.g. "Credit Card", "Voucher").
+
+      - name: payment_installments
+        description: Number of installments the payment was split into.
+
+      - name: order_purchase_date
+        description: Date portion of the order purchase timestamp.
+
+      - name: order_purchase_at
+        description: Time portion of the order purchase timestamp.
+
+      - name: order_status
+        description: Status of the order at time of extraction, title-cased.
+
+      - name: is_split_payment
+        description: >
+          Boolean flag indicating whether the order was paid using more than
+          one payment record (e.g. multiple payment methods).
+
+      - name: has_multiple_installments
+        description: Boolean flag indicating whether the customer chose to pay in installments.
+
+      - name: payment_amount
+        description: Measure. Dollar amount of this individual payment record.
