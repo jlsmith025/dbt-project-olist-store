@@ -8,12 +8,12 @@ renamed as (
 
     select
         order_id,
-        order_item_id as order_item_sequence,
+        order_item_id,
         product_id,
         seller_id,
-        shipping_limit_date as shipping_limit_timestamp,
+        shipping_limit_date,
         price,
-        freight_value as freight_cost
+        freight_value
     from
         order_items
 

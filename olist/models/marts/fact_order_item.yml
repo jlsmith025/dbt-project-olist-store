@@ -1,0 +1,142 @@
+version: 2
+
+models:
+  - name: fact_order_item
+    description: >
+      Fact table at order line-item grain (one row per order_id + order_item_id). 
+      Holds pricing and freight measures for each item sold,
+      plus FKs to the purchase date, shipping limit date, customer, order_customer, product, and seller dimensions.
+      Order-level measures (item counts, order totals) can be derived by grouping this table on order_id rather than
+      maintaining a separate order-grain fact.
+    columns:
+      - name: order_item_key
+        description: Primary key, generated as an MD5 hash of order_id + order_item_id.
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_unique_key
+        description: >
+          Surrogate key, generated as an MD5 hash of customer_unique_id.
+          Joins to dim_customer
+        tests:
+          - not_null
+      
+      - name: order_customer_key
+        description: >
+          Surrogate key, generated as an MD5 hash of order_customer_id.
+          Joins to dim_order_customer
+        tests:
+          - not_null
+
+      - name: product_key
+        description: >
+          Surrogate key, generated as an MD5 hash of product_id.
+          Joins to dim_product for information about the product for the
+          order_item record
+        tests:
+          - not_null
+
+      - name: seller_key
+        description: >
+          Surrogate key, generated as an MD5 hash of seller_id.
+          Joins to dim_seller for information about the seller of the order_item
+        tests:
+          - not_null
+      
+      - name: order_purchase_date_key
+        description: Date key (YYYYMMDD) when the order was purchased. Foreign key to dim_date.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: order_purchase_at
+        description: Time-of-day component of the order purchase timestamp.
+
+      - name: shipping_limit_date_key
+        description: Date key (YYYYMMDD) of the shipping limit date for handing the order to the carrier. Foreign key to dim_date.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+      - name: shipping_limit_at
+        description: Time-of-day component of the shipping limit timestamp.
+
+      - name: order_id
+        description: Natural key for the order.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_order_customer')
+                field: order_id
+
+      - name: product_id
+        description: Naturual key for the product
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_id
+                config:
+                  enabled: false
+
+      - name: seller_id
+        description: Natural key for the seller
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_seller')
+                field: seller_id
+      
+      - name: customer_unique_id
+        description: Natural key identifying a unique customer
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_unique_id
+
+      - name: order_item_line_number
+        description: >
+          Sequential line number of the item within its order (1, 2, 3...).
+          Multiples of the same item are on separate order_item_line_numbers
+        tests:
+          - not_null
+
+      - name: order_status
+        description: >
+          Degenerate dimension carried from orders (e.g. delivered, shipped,
+          canceled) so item-level queries can filter without an extra join.
+
+      - name: item_price
+        description: Item price, in BRL, excluding freight.
+        tests:
+          - not_null
+
+      - name: item_freight_fee
+        description: Freight fee, in BRL, paid by the customer for this line item.
+        tests:
+          - not_null
+
+      - name: item_revenue
+        description: item_price + item_freight_fee.
+
+      - name: item_count
+        description: Always 1. Sums to a line-item count when aggregated.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - order_item_line_number
