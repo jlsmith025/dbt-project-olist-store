@@ -11,13 +11,6 @@ models:
         data_type: varchar
         description: "Surrogate key, md5 hash of order_customer_id. Primary key of this table"
 
-      - name: order_key
-        data_type: varchar
-        description: "Surrogate key, md5 hash of order_id."
-        tests:
-          - unique
-          - not_null
-
       - name: order_id
         description: Natural key of the order, sourced from stg__orders.
         tests:

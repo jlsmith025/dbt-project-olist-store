@@ -44,7 +44,6 @@ order_customers_combined as (
 
     select
         md5(customers_orders_joined.order_customer_id) as order_customer_key,
-        md5(customers_orders_joined.order_id) as order_key,
         customers_orders_joined.order_id,
         customers_orders_joined.order_customer_id,
         customers_orders_joined.customer_unique_id,
