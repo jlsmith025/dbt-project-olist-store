@@ -26,7 +26,7 @@ Kaggle Download Script
 Olist CSV Files
        │
        ▼
-Python Ingestion Layer  ──────────►  see ingestion/README.MD
+Python Ingestion Layer  ──────────►  see Ingestion/README.MD
        │
        ▼
 Snowflake RAW Schema
@@ -50,7 +50,7 @@ project-root/
 │   ├── download_olist_data_and_enrich_files.py
 │   ├── load_olist_to_snowflake.py
 │   ├── requirements.txt
-│   └── README.MD                 # Full ingestion documentation → [ingestion/README.MD](ingestion/README.MD)
+│   └── README.MD                 # Full ingestion documentation → [Ingestion/README.MD](Ingestion/README.MD)
 │
 ├── olist/                        # dbt transformation project (RAW → star schema)
 │   ├── models/
@@ -88,7 +88,7 @@ project-root/
 
 The ingestion layer downloads the Olist CSV files from Kaggle, performs light enrichment (e.g. generating seller names), and loads the files into Snowflake's `RAW` schema via `COPY INTO`. It is intentionally kept separate from the dbt transformation layer and is designed to be safely rerunnable.
 
-**Full documentation:** [ingestion/README.MD](ingestion/README.MD)
+**Full documentation:** [Ingestion/README.MD](Ingestion/README.MD)
 
 ## Data Modeling
 
@@ -122,12 +122,12 @@ Key dimensions and facts include
 ```bash
 cd ingestion
 pip install -r requirements.txt
-# configure Snowflake connection (see ingestion/README.MD)
+# configure Snowflake connection (see Ingestion/README.MD)
 python download_olist_data_and_enrich_files.py
 python load_olist_to_snowflake.py
 ```
 
-See [ingestion/README.MD](ingestion/README.MD) for prerequisites, Snowflake configuration, and detailed step-by-step instructions.
+See [Ingestion/README.MD](Ingestion/README.MD) for prerequisites, Snowflake configuration, and detailed step-by-step instructions.
 
 ### 2. Run the dbt project
 
@@ -145,12 +145,12 @@ See [olist/README.MD](olist/README.MD) for the full data model, design decisions
 
 ## Testing & Validation
 
-* **Ingestion:** validates that expected source files are present and readable, that the Snowflake connection and target tables exist, and captures the result of each `COPY INTO` operation. See [ingestion/README.MD](ingestion/README.MD#data-validation).
+* **Ingestion:** validates that expected source files are present and readable, that the Snowflake connection and target tables exist, and captures the result of each `COPY INTO` operation. See [Ingestion/README.MD](Ingestion/README.MD#data-validation).
 * **dbt:** referential integrity between fact and dimension tables (e.g. `product_id` and `seller_id` on `fact_order_items`) is enforced with `relationships` tests. See [olist/README.MD](olist/README.MD#testing).
 
 ## Related Documentation
 
-* [Data Ingestion README](ingestion/README.MD) - Kaggle download, enrichment, and Snowflake `RAW` loading
+* [Data Ingestion README](Ingestion/README.MD) - Kaggle download, enrichment, and Snowflake `RAW` loading
 * [dbt Project README](olist/README.MD) - staging/intermediate/marts layering and star schema design
 * [ER Diagram](<olist/Olist ERD.md>) - entity-relationship diagram of the star schema
 * [Example Analysis Queries](/SQL%20analysis/) - SQL for analysis using the data model
