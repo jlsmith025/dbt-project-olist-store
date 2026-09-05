@@ -147,3 +147,9 @@ See [olist/README.MD](olist/README.MD) for the full data model, design decisions
 * [Data Ingestion README](ingestion/README.MD) — Kaggle download, enrichment, and Snowflake `RAW` loading
 * [dbt Project README](olist/README.MD) — staging/intermediate/marts layering and star schema design
 * [ER Diagram](<olist/Olist ERD.md>) — entity-relationship diagram of the star schema
+
+## Future Learning Goals
+This project focuses on dimensional modeling and doesn't cover the following, noted here as gaps I'm aware of and plan to address in future projects:
+* **Orchestration:** Running the dbt project on a schedule
+* **Incremental Refreshes:** Working with a changing data source
+* **Snapshots:** Using dbt snapshots for Type 2 slowly changing dimensions
