@@ -1,5 +1,7 @@
 create database if not exists raw;
 
+create database if not exists dev;
+
 create schema if not exists olist;
 
 create table if not exists raw.olist.customers (
