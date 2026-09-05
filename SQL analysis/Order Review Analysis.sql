@@ -1,0 +1,19 @@
+select
+    order_review.review_id,
+    order_review.order_id,
+    order_review.has_comment,
+    order_review.delivery_variance_to_estimate_days,
+    order_review.purchase_to_delivery_duration_days,
+    order_review.delivery_performance_status,
+    order_review.customer_city,
+    order_review.customer_state,
+    order_review.customer_zip_code,
+    order_review.customer_latitude,
+    order_review.customer_longitude,
+    order_review.review_score,
+    order_review.review_weight,
+    order_review.orders_per_review,
+    order_review.review_response_days
+from
+    analytics.olist_mart.fact_order_review order_review
+;
